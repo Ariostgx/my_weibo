@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>
+      {% block title %} {{ user['username']}}'s Leaders{% endblock %}
+      <div class="about">start blog from {{ user['dated'].strftime('%Y-%m-%d') }}</div>
+  </h1>
+
+    {% if g.user['id'] != user['id'] and user['id'] not in g.leader %}
+          <a class="action" href="{{ url_for('user.follow_user', user_id=g.user['id'], leader_id=user['id']) }}">Follow</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if leaders %}
+  {% for leader in leaders %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ leader['username'] }}</h1>
+          <div class="about">{{ leader['dated'].strftime('%Y-%m-%d') }}</div>
+        </div>
+      </header>
+
+    </article>
+      <a class="action" href="{{ url_for('user.show_user', user_id=leader['id']) }}">LOOK</a>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+    {% else %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>No anyone</h1>
+        </div>
+      </header>
+
+    </article>
+    {% endif %}
+{% endblock %}
