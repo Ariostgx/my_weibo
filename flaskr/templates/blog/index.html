@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %} Blogs {% endblock %}</h1>
+    {% if g.user %}
+       <a class="action" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">See my friends</a>
+    {% endif %}
+
+    <a class="action" href="{{ url_for('user.users_index') }}">These user may be your friends</a>
+  {% if g.user %}
+    <a class="action" href="{{ url_for('blog.create') }}">New Blog</a>
+  {% endif %}
+
+
+{% endblock %}
+
+{% block content %}
+  {% for blog in blogs %}
+    <article class="post">
+      <header>
+
+        <div>
+        {% if blog['fork_time'] %}
+          <h1>[FORK!]</h1>
+            <div class="about">Fork by {{ blog['fork_username'] }} on {{ blog['fork_time'].strftime('%Y-%m-%d') }}
+               from <a class="action" href="{{ url_for('user.show_user', user_id=blog['author_id']) }}">{{ blog['username'] }}</a>
+            </div>
+        {% else %}
+            <h1>[Origin]</h1>
+            <div class="about">created by {{ blog['username'] }} on {{ blog['dated'].strftime('%Y-%m-%d') }}</div>
+        {% endif %}
+
+        </div>
+
+        {% if g.user['id'] == blog['author_id'] %}
+          <a class="action" href="{{ url_for('blog.update', id=blog['id']) }}">Edit</a>
+        {% endif %}
+      </header>
+      <p class="body">{{ blog['context'] }}</p>
+
+    </article>
+      <a class="action" href="{{ url_for('blog.show_blog', blog_id=blog['id']) }}">See more</a>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

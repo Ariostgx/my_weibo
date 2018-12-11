@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Details{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <article class="post">
+      <header>
+        <div>
+          <div class="about">by {{ comment['username'] }} on {{ comment['dated'].strftime('%Y-%m-%d') }}</div>
+        </div>
+        {% if g.user['id'] == comment['author_id'] %}
+          <a class="action" href="{{ url_for('comment.update', comment_id=comment['id']) }}">Edit</a>
+        {% endif %}
+      </header>
+      <p class="body">{{ comment['context'] }}</p>
+    </article>
+
+
+{% endblock %}

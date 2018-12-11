@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}New Blog{% endblock %}</h1>
+{% endblock %}
+
+
+<script type="text/javascript">
+
+    function updateContentLen(content){
+        var str = content.value;
+
+        var len=0;
+        for(var i=0;i<str.length;i++){
+            if(  str.charAt(i).match(/[^\x00-\xff]/ig) !=null) {
+                len += 2;
+            }else{
+                len += 1;
+            }
+        }
+
+        var clen =(140-len);
+
+        document.getElementById("checklen").innerHTML = clen;
+
+    }
+
+</script>
+
+
+{% block content %}
+  <form method="post">
+    <label for="body">Body</label>
+    <textarea name="body" id="body" onkeyup="updateContentLen(this)" >{{ request.form['context'] }}</textarea>
+     <p >还可以继续输入<span id="checklen">140</span>个字符</p>
+      <input type="submit" value="Save">
+  </form>
+{% endblock %}
+

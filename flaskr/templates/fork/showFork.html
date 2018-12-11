@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Details{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>[FORK!]</h1>
+          <div class="about">Created by {{ blog['username'] }} on {{ blog['dated'].strftime('%Y-%m-%d') }}</div>
+          <div class="about">Fork by {{ user['username'] }} on {{ blog['fork_time'].strftime('%Y-%m-%d') }}</div>
+          <a class="action" href="{{ url_for('blog.show_blog', blog_id=blog['id']) }}">See original</a>
+        </div>
+        {% if g.user['id'] == blog['author_id'] and g.user['id'] == user['id'] %}
+          <a class="action" href="{{ url_for('blog.update', id=blog['id']) }}">Edit</a>
+        {% endif %}
+      
+        {% if g.user %}
+          <a class="action" href="{{ url_for('comment.create_comment_fork', user_id=user['id'], blog_id=blog['id']) }}">Comment</a>
+        {% endif %}
+      
+      </header>
+      <p class="body">{{ blog['context'] }}</p>
+    </article>
+
+    {% for comment in comments %}
+    <article class="post">
+      <header>
+        <div>
+          <div class="about">Commented by {{ comment['username'] }} on {{ comment['dated'].strftime('%Y-%m-%d') }}</div>
+        </div>
+        {% if g.user['id'] == comment['author_id'] %}
+          <a class="action" href="{{ url_for('comment.update', comment_id=comment['id']) }}">Edit</a>
+        {% endif %}
+      </header>
+      <p class="body">{{ comment['context'] }}</p>
+
+    </article>
+      <a class="action" href="{{ url_for('comment.show_comment', comment_id=comment['id']) }}">See more</a>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+
+{% endblock %}
