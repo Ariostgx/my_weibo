@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %} Blogs {% endblock %}</h1>
-    {% if g.user %}
-       <a class="action" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">See my friends</a>
-    {% endif %}
-
-    <a class="action" href="{{ url_for('user.users_index') }}">These user may be your friends</a>
-  {% if g.user %}
-    <a class="action" href="{{ url_for('blog.create') }}">New Blog</a>
-  {% endif %}
+  <div class="nav-scroller bg-white shadow-sm">
+      <nav class="nav nav-underline">
+        <a class="nav-link active" href="{{ url_for('blog.create') }}">New Blog</a>
+        <a class="nav-link" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">
+          Friends
+          <span class="badge badge-pill bg-light align-text-bottom">27</span>
+        </a>
+        <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
+        <a class="nav-link" href="{{ url_for('blog.index') }}">World</a>
+        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" href="#">Link</a>
+      </nav>
+    </div>
 
 
 {% endblock %}
@@ -21,7 +28,7 @@
 
         <div>
         {% if blog['fork_time'] %}
-          <h1>[FORK!]</h1>
+          <h1>{{ blog['fork_comment'] }}</h1>
             <div class="about">Fork by {{ blog['fork_username'] }} on {{ blog['fork_time'].strftime('%Y-%m-%d') }}
                from <a class="action" href="{{ url_for('user.show_user', user_id=blog['author_id']) }}">{{ blog['username'] }}</a>
             </div>
@@ -32,15 +39,19 @@
 
         </div>
 
-        {% if g.user['id'] == blog['author_id'] %}
+        {% if g.user['id'] == blog['author_id'] and blog['ori_blog_id'] == 1%}
           <a class="action" href="{{ url_for('blog.update', id=blog['id']) }}">Edit</a>
         {% endif %}
       </header>
       <p class="body">{{ blog['context'] }}</p>
 
     </article>
-      <a class="action" href="{{ url_for('blog.show_blog', blog_id=blog['id']) }}">See more</a>
-    {% if not loop.last %}
+      {% if blog['ori_blog_id'] == -1 %}
+        <a class="action" href="{{ url_for('blog.show_blog', blog_id=blog['id']) }}">See more</a>
+    {% else %}
+       <a class="action" href="{{ url_for('fork.show_fork', blog_id=blog['id'], user_id=blog['fork_id']) }}">See more</a>
+     {% endif %}
+      {% if not loop.last %}
       <hr>
     {% endif %}
   {% endfor %}

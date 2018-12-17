@@ -54,7 +54,7 @@ def get_user_and_blogs(id, check_login=True):
         'SELECT b.id, b.dated as dated, context, '
         'u.id as author_id, username'
         ' FROM blog b JOIN user_blog u_b ON b.id = u_b.blog_id JOIN user u ON u_b.user_id=u.id'
-        ' WHERE u.id = ?',
+        ' WHERE u.id = ? and b.ori_blog_id == -1',
         (id,)
     ).fetchall()
 
@@ -101,15 +101,32 @@ def get_user_and_forks(id, check_login=True):
         if g.user is None:
             return redirect(url_for('auth.login'))
 
-    forks = db.execute(
-        'SELECT b.id as id, f.dated as fork_time, b.dated as dated,'
-        ' context, u2.id as author_id, u2.username as username, '
-        ' u.username as fork_username'
-        ' FROM fork f JOIN user u ON f.user_id = u.id JOIN blog b on f.blog_id = b.id'
-        ' JOIN user_blog u_b on b.id=u_b.blog_id JOIN user u2 ON u2.id = u_b.user_id'
-        ' Where u.id = ?',
-        (id,)
+    blog = db.execute(
+        'SELECT b.id as id, b.dated as fork_time, '
+        'b.context as fork_comment, u.username as fork_name,'
+        'u.id as fork_id, b.ori_blog_id as ori_blog_id'
+        ' FROM blog b JOIN user_blog u_b on b.id = u_b.blog_id'
+        ' JOIN user u ON u.id = u_b.user_id '
+        'WHERE u.id = ? and (b.ori_blog_id < -1 or b.ori_blog_id > -1)',
+        (id, )
     ).fetchall()
+
+    ori_blogs = []
+    for i in blog:
+        ori_blog = db.execute(
+            'SELECT b.id as ori_id, b.dated as dated, '
+            'b.context as context, u.username as username,'
+            'u.id as author_id'
+            ' FROM blog b JOIN user_blog u_b on b.id = u_b.blog_id'
+            ' JOIN user u ON u.id = u_b.user_id '
+            ' WHERE b.id = ?',
+            (i['ori_blog_id'], )
+        ).fetchone()
+        ori_blogs.append(ori_blog)
+
+    for i in range(len(blog)):
+        blog[i].update(ori_blogs[i])
+        blog[i]['fork_id'] = id
 
     is_follower = False
     is_leader = False
@@ -136,7 +153,7 @@ def get_user_and_forks(id, check_login=True):
         if leader is not None:
             is_leader = True
 
-    return user, forks, is_follower, is_leader
+    return user, blog, is_follower, is_leader
 
 
 def get_user_and_followers(id, check_login=True):
@@ -194,7 +211,7 @@ def get_user_and_leaders(id, check_login=True):
 def sort_by_creat_time(x):
     try:
         res = x['fork_time']
-    except IndexError:
+    except KeyError:
         res = x['dated']
 
     return res

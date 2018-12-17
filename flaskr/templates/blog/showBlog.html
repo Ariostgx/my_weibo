@@ -8,7 +8,7 @@
     <article class="post">
       <header>
         <div>
-          <h1>{{ blog['title'] }}</h1>
+          <h1>[Origin]</h1>
           <div class="about">by {{ blog['username'] }} on {{ blog['dated'].strftime('%Y-%m-%d') }}</div>
         </div>
         {% if g.user['id'] == blog['author_id'] %}
@@ -16,13 +16,13 @@
         {% endif %}
 
         {% if g.user %}
-          <a class="action" href="{{ url_for('comment.create_comment_blog', blog_id=blog['id']) }}">Comment</a>
+          <a class="action" href="{{ url_for('comment.create_comment_blog', blog_id=blog['id'], user_id=g.user['id']) }}">  Comment</a>
         {% endif %}
 
-        {% if g.user and g.user['id'] != blog['author_id'] and blog['id'] not in g.fork%}
-          <a class="action" href="{{ url_for('fork.create', blog_id=blog['id']) }}">Fork</a>
-        {% elif g.user and g.user['id'] != blog['author_id'] and blog['id'] in g.fork%}
-            <a class="action" href="{{ url_for('fork.delete', blog_id=blog['id']) }}">UnFork</a>
+        {% if g.user and blog['id'] not in g.fork%}
+          <a class="action" href="{{ url_for('fork.create', blog_id=blog['id']) }}">  Fork</a>
+        {% elif g.user and blog['id'] in g.fork%}
+            <a class="action" href="{{ url_for('fork.delete', blog_id=blog['id']) }}">  UnFork</a>
         {% endif %}
 
       </header>
@@ -36,13 +36,13 @@
           <div class="about">Commented by {{ comment['username'] }} on {{ comment['dated'].strftime('%Y-%m-%d') }}</div>
         </div>
         {% if g.user['id'] == comment['author_id'] %}
-          <a class="action" href="{{ url_for('comment.update', comment_id=comment['id']) }}">Edit</a>
+          <a class="action" href="{{ url_for('comment.update', user_id=g.user['id'], blog_id=comment['blog_id'], dated=comment['dated']) }}">Edit</a>
         {% endif %}
       </header>
       <p class="body">{{ comment['context'] }}</p>
 
     </article>
-      <a class="action" href="{{ url_for('comment.show_comment', comment_id=comment['id']) }}">See more</a>
+      <a class="action" href="{{ url_for('comment.show_comment', user_id=g.user['id'], blog_id=comment['blog_id'], dated=comment['dated']) }}">See more</a>
     {% if not loop.last %}
       <hr>
     {% endif %}

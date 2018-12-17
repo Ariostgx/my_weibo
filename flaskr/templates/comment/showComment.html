@@ -11,7 +11,7 @@
           <div class="about">by {{ comment['username'] }} on {{ comment['dated'].strftime('%Y-%m-%d') }}</div>
         </div>
         {% if g.user['id'] == comment['author_id'] %}
-          <a class="action" href="{{ url_for('comment.update', comment_id=comment['id']) }}">Edit</a>
+          <a class="action" href="{{ url_for('comment.update', user_id=comment['user_id'], blog_id=comment['blog_id'], dated=comment['dated']) }}">Edit</a>
         {% endif %}
       </header>
       <p class="body">{{ comment['context'] }}</p>

@@ -59,7 +59,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('blog.friends_blog', user_id=user['id']))
+            return redirect(url_for('blog.index'))
 
         flash(error)
 
@@ -69,7 +69,6 @@ def login():
 @bp.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
-
     if user_id is None:
         g.user = None
     else:
@@ -90,14 +89,15 @@ def load_logged_in_user():
         g.leader = leader
 
         fork_row = db.execute(
-            'SELECT f.blog_id as id'
-            ' FROM fork f'
-            ' Where f.user_id = ?',
+            'SELECT b.id as id, b.ori_blog_id as ori_blog_id'
+            ' FROM blog b JOIN user_blog u_b on u_b.blog_id = b.id'
+            ' Where u_b.user_id = ?',
             (user_id,)
         ).fetchall()
         fork = []
         for i in fork_row:
-            fork.append(i['id'])
+            if i['ori_blog_id'] != -1:
+                fork.append(i['ori_blog_id'])
         g.fork = fork
 
 
