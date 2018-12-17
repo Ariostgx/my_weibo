@@ -6,6 +6,7 @@ from werkzeug.exceptions import abort
 from flaskr.auth import login_required
 from flaskr.db import get_db
 from flaskr.comment import get_comments_on_blog
+from .user import get_user_and_blogs, get_user_and_forks
 
 bp = Blueprint('blog', __name__)
 
@@ -13,7 +14,7 @@ bp = Blueprint('blog', __name__)
 def sort_by_creat_time(x):
     try:
         res = x['fork_time']
-    except IndexError:
+    except KeyError:
         res = x['dated']
 
     return res
@@ -23,22 +24,25 @@ def sort_by_creat_time(x):
 def index():
     db = get_db()
     blogs = db.execute(
-        'SELECT b.id, b.dated as dated, context, u.id as author_id, username'
+        'SELECT b.id, b.dated as dated, context, b.ori_blog_id as ori_blog_id,'
+        ' u.id as author_id, username'
         ' FROM user u JOIN user_blog u_b on u.id = u_b.user_id JOIN blog b on u_b.blog_id = b.id'
+        ' WHERE b.ori_blog_id == -1'
         ' ORDER BY dated DESC'
     ).fetchall()
 
     forks = db.execute(
-        'SELECT b.id as id, f.dated as fork_time, b.dated as dated,'
-        ' b.context as context, u2.id as author_id, u2.username as username, '
-        ' u.username as fork_username'
-        ' FROM fork f JOIN user u ON f.user_id = u.id JOIN blog b on f.blog_id = b.id'
-        ' JOIN user_blog u_b on b.id=u_b.blog_id JOIN user u2 ON u2.id = u_b.user_id'
+        'SELECT b1.id as id, b1.dated as fork_time, b2.dated as dated,'
+        ' b1.ori_blog_id as ori_blog_id, b1.context as fork_comment,'
+        ' b2.context as context, u2.id as author_id, u2.username as username, '
+        ' u1.username as fork_username, u1.id as fork_id'
+        ' FROM blog b1 JOIN blog b2 ON b1.ori_blog_id = b2.id'
+        ' JOIN user_blog u_b on u_b.blog_id = b1.id JOIN user u1 ON u1.id = u_b.user_id'
+        ' JOIN user_blog u_b_2 ON u_b_2.blog_id = b2.id JOIN user u2 ON u2.id = u_b_2.user_id'
+        ' WHERE b1.ori_blog_id > -1 or b1.ori_blog_id < -1'
     ).fetchall()
-
     blogs = blogs + forks
     blogs = sorted(blogs, key=sort_by_creat_time, reverse=True)
-
     return render_template('blog/index.html', blogs=blogs)
 
 
@@ -82,7 +86,7 @@ def create():
 def get_blog(id, check_author=True):
     blog = get_db().execute(
         'SELECT b.id, b.dated as dated, context, '
-        'u.id as author_id, username'
+        'u.id as author_id, username, b.ori_blog_id as ori_blog_id'
         ' FROM blog b JOIN user_blog u_b ON b.id = u_b.blog_id JOIN user u ON u_b.user_id=u.id'
         ' WHERE b.id = ?',
         (id,)
@@ -148,6 +152,10 @@ def friends_blog():
     blogs = []
     forks = []
     for leader in g.leader:
+        _, blog_i, _, _ = get_user_and_blogs(leader)
+        _, fork_i, _, _ = get_user_and_forks(leader)
+
+        """
         blogs_i = db.execute(
             'SELECT b.id, b.dated as dated, context, u.id as author_id, username'
             ' FROM user u JOIN user_blog u_b on u.id = u_b.user_id JOIN blog b on u_b.blog_id = b.id'
@@ -168,6 +176,9 @@ def friends_blog():
         ).fetchall()
         blogs = blogs + blogs_i
         forks = forks + forks_i
+        """
+        blogs = blogs + blog_i
+        forks = forks + fork_i
 
     blogs = blogs + forks
     blogs = sorted(blogs, key=sort_by_creat_time, reverse=True)

@@ -1,13 +1,31 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Why you Fork it{% endblock %}</h1>
+  <h1>{% block title %}What's Your Comment{% endblock %}</h1>
 {% endblock %}
-
 {% block content %}
-  <form method="post">
-    <label for="body">What's Your Comment?</label>
-    <textarea name="body" id="body">{{ request.form['context'] }}</textarea>
-    <input type="submit" value="Save">
+<script type="text/javascript">
+		function checkLength(obj)  {
+
+		    var maxChars = 140;//最多字符数
+		    var curr = maxChars - obj.value.length;
+		    if( curr > 0 ){
+		    	document.getElementById("checklen").innerHTML = curr.toString();
+		    }else{
+		    	document.getElementById("checklen").innerHTML = '0';
+		    	document.getElementById("subject").readOnly=true;
+		    }
+		}
+
+</script>
+    <form method="post">
+    <label for="body">Comment</label>
+        <textarea name="body" id="body" maxlength="140" onkeyup="checkLength(this)" ></textarea>
+        <span id="subjectchk">
+			<strong id="checklen" style="color:#FF0000">140</strong>
+			character(s) left
+		</span>
+		<span id="postNameRule" class="spn_flag_1" style="display:none" ></span>
+      <input type="submit" value="Save">
   </form>
 {% endblock %}

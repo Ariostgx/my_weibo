@@ -8,17 +8,25 @@
     <article class="post">
       <header>
         <div>
-          <h1>[FORK!]</h1>
+          <h1>{{ blog['fork_comment'] }}</h1>
           <div class="about">Created by {{ blog['username'] }} on {{ blog['dated'].strftime('%Y-%m-%d') }}</div>
           <div class="about">Fork by {{ user['username'] }} on {{ blog['fork_time'].strftime('%Y-%m-%d') }}</div>
-          <a class="action" href="{{ url_for('blog.show_blog', blog_id=blog['id']) }}">See original</a>
+          <a class="action" href="{{ url_for('blog.show_blog', blog_id=blog['ori_id']) }}">See original</a>
         </div>
-        {% if g.user['id'] == blog['author_id'] and g.user['id'] == user['id'] %}
-          <a class="action" href="{{ url_for('blog.update', id=blog['id']) }}">Edit</a>
+        {% if g.user['id'] == blog['fork_id'] %}
+             <form action="{{ url_for('fork.delete', blog_id=blog['id'], user_id=g.user['id'], dated=blog['fork_time']) }}" method="post">
+               <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+             </form>
+
         {% endif %}
       
         {% if g.user %}
           <a class="action" href="{{ url_for('comment.create_comment_fork', user_id=user['id'], blog_id=blog['id']) }}">Comment</a>
+        {% endif %}
+      {% if g.user and blog['id'] not in g.fork%}
+          <a class="action" href="{{ url_for('fork.create', blog_id=blog['id']) }}">  Fork</a>
+        {% elif g.user and blog['id'] in g.fork%}
+            <a class="action" href="{{ url_for('fork.delete', blog_id=blog['id']) }}">  UnFork</a>
         {% endif %}
       
       </header>
@@ -32,13 +40,13 @@
           <div class="about">Commented by {{ comment['username'] }} on {{ comment['dated'].strftime('%Y-%m-%d') }}</div>
         </div>
         {% if g.user['id'] == comment['author_id'] %}
-          <a class="action" href="{{ url_for('comment.update', comment_id=comment['id']) }}">Edit</a>
+          <a class="action" href="{{ url_for('comment.update', user_id=comment['user_id'], blog_id=comment['blog_id'], dated=comment['dated']) }}">Edit</a>
         {% endif %}
       </header>
       <p class="body">{{ comment['context'] }}</p>
 
     </article>
-      <a class="action" href="{{ url_for('comment.show_comment', comment_id=comment['id']) }}">See more</a>
+      <a class="action" href="{{ url_for('comment.show_comment', user_id=comment['user_id'], blog_id=comment['blog_id'], dated=comment['dated']) }}">See more</a>
     {% if not loop.last %}
       <hr>
     {% endif %}

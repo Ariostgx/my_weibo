@@ -2,7 +2,6 @@ DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS blog;
 DROP TABLE IF EXISTS follower;
 DROP TABLE IF EXISTS comment;
-DROP TABLE IF EXISTS fork;
 DROP TABLE IF EXISTS user_comment;
 DROP TABLE IF EXISTS user_blog;
 DROP TABLE IF EXISTS blog_comment;
@@ -18,12 +17,16 @@ CREATE TABLE user(
 CREATE TABLE blog(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   dated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  context TEXT NOT NULL
+  context TEXT NOT NULL,
+  ori_blog_id INTEGER DEFAULT -1,
+  FOREIGN KEY (ori_blog_id) REFERENCES blog(id) ON DELETE SET NULL
 );
 
+insert into blog (id, context) values (-1, 'This blog had been deleted');
 
 CREATE TABLE comment(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  blog_id INTEGER NOT NULL,
   context TEXT NOT NULL,
   dated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -37,14 +40,6 @@ CREATE TABLE follower(
   FOREIGN KEY (leader_id) REFERENCES user (id)
 );
 
-
-CREATE TABLE fork(
-  dated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  blog_id INTEGER NOT NULL,
-  user_id INTEGER NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES user(id)
-  FOREIGN KEY (blog_id) REFERENCES blog(id)
-);
 
 
 CREATE TABLE user_comment(
