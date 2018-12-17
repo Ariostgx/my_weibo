@@ -14,8 +14,8 @@
         <a class="action" href="{{ url_for('user.update', user_id=g.user['id'])}}">Edit Yourself</a>
     {% endif %}
 
-    <a class="action" href="{{ url_for('user.show_followers', user_id=user['id']) }}">Who follow him/her</a>
-    <a class="action" href="{{ url_for('user.show_leaders', user_id=user['id']) }}">Who lead him/her</a>
+    <a class="action" href="{{ url_for('user.show_followers', user_id=user['id']) }}">Followers</a>
+    <a class="action" href="{{ url_for('user.show_leaders', user_id=user['id']) }}">Following</a>
 
 
 {% endblock %}
