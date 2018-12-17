@@ -1,15 +1,32 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %} Blogs {% endblock %}</h1>
-    {% if g.user %}
-       <a class="action" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">See my friends</a>
-    {% endif %}
+  <div class="nav-scroller bg-white shadow-sm">
+      <nav class="nav nav-underline">
+        <a class="nav-link active" href="#">Dashboard</a>
+        <a class="nav-link" href="#">
+          Friends
+          <span class="badge badge-pill bg-light align-text-bottom">27</span>
+        </a>
+        <a class="nav-link" href="#">Explore</a>
+        <a class="nav-link" href="#">Suggestions</a>
+        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" href="#">Link</a>
+        <a class="nav-link" href="#">Link</a>
+      </nav>
+    </div>
 
-    <a class="action" href="{{ url_for('user.users_index') }}">These user may be your friends</a>
-  {% if g.user %}
-    <a class="action" href="{{ url_for('blog.create') }}">New Blog</a>
-  {% endif %}
+  <!--<h1>{% block title %} Blogs {% endblock %}</h1>-->
+    <!--{% if g.user %}-->
+       <!--<a class="action" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">See my friends</a>-->
+    <!--{% endif %}-->
+
+    <!--<a class="action" href="{{ url_for('user.users_index') }}">These user may be your friends</a>-->
+  <!--{% if g.user %}-->
+    <!--<a class="action" href="{{ url_for('blog.create') }}">New Blog</a>-->
+  <!--{% endif %}-->
 
 
 {% endblock %}
