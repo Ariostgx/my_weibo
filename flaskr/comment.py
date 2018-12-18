@@ -60,7 +60,7 @@ def create_comment_fork(blog_id, user_id):
     return render_template('comment/create.html')
 
 
-def get_comments_on_blog(blog_id):
+def get_comments_on_blog(blog_id, num_comment=-1):
     comments = get_db().execute(
         'SELECT c.dated as dated, c.context as context,'
         ' u.username as username, u.id as author_id,'
@@ -71,6 +71,11 @@ def get_comments_on_blog(blog_id):
         ' ORDER BY dated DESC',
         (blog_id,)
     ).fetchall()
+
+    if num_comment != -1:
+        if num_comment < len(comments):
+            num_comment = len(comments)
+        comments = comments[:num_comment]
 
     if comments is None:
         return ['Here no comment']
