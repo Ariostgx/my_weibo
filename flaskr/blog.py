@@ -41,6 +41,7 @@ def index():
         ' JOIN user_blog u_b_2 ON u_b_2.blog_id = b2.id JOIN user u2 ON u2.id = u_b_2.user_id'
         ' WHERE b1.ori_blog_id > -1 or b1.ori_blog_id < -1'
     ).fetchall()
+
     blogs = blogs + forks
     blogs = sorted(blogs, key=sort_by_creat_time, reverse=True)
     return render_template('blog/index.html', blogs=blogs)
@@ -182,6 +183,5 @@ def friends_blog():
 
     blogs = blogs + forks
     blogs = sorted(blogs, key=sort_by_creat_time, reverse=True)
-
     return render_template('blog/index.html', blogs=blogs)
 

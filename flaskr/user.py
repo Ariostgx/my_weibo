@@ -51,7 +51,7 @@ def get_user_and_blogs(id, check_login=True):
             return redirect(url_for('auth.login'))
 
     blogs = db.execute(
-        'SELECT b.id, b.dated as dated, context, '
+        'SELECT b.id, b.dated as dated, context, ori_blog_id,'
         'u.id as author_id, username'
         ' FROM blog b JOIN user_blog u_b ON b.id = u_b.blog_id JOIN user u ON u_b.user_id=u.id'
         ' WHERE u.id = ? and b.ori_blog_id == -1',
@@ -110,7 +110,7 @@ def get_user_and_forks(id, check_login=True):
         'WHERE u.id = ? and (b.ori_blog_id < -1 or b.ori_blog_id > -1)',
         (id, )
     ).fetchall()
-
+    print(blog)
     ori_blogs = []
     for i in blog:
         ori_blog = db.execute(
