@@ -11,9 +11,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-
-    {% block header %}{% endblock %}
-
 </head>
 
 <body class="bg-light">
@@ -52,8 +49,9 @@
     </div>
 </nav>
 
-<section class="content">
+{% block header %}{% endblock %}
 
+<section class="content">
     {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
     {% endfor %}
