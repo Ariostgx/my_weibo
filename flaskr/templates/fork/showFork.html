@@ -1,55 +1,76 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Details{% endblock %}</h1>
+<div class="nav-scroller nav bg-white shadow-sm">
+    <nav class="nav nav-underline">
+        <a class="nav-link" href="{{ url_for('blog.index') }}">World</a>
+        <a class="nav-link" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">
+            Friends
+        </a>
+        <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
+        <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
+
+        {% if g.user %}
+        <a class="nav-link" href="{{ url_for('comment.create_comment_fork', user_id=user['id'], blog_id=blog['id']) }}">Comment</a>
+        {% endif %}
+        {% if g.user and blog['id'] not in g.fork%}
+        <a class="nav-link" href="{{ url_for('fork.create', blog_id=blog['id']) }}">  Fork</a>
+        {% elif g.user and blog['id'] in g.fork%}
+        <a class="nav-link" href="{{ url_for('fork.delete', blog_id=blog['id']) }}">  UnFork</a>
+        {% endif %}
+
+        {% if g.user['id'] == blog['author_id'] %}
+        <a class="nav-link" href="{{ url_for('blog.update', id=blog['id']) }}">Edit</a>
+        {% endif %}
+    </nav>
+</div>
+
 {% endblock %}
 
 {% block content %}
-    <article class="post">
-      <header>
-        <div>
-          <h1>{{ blog['fork_comment'] }}</h1>
-          <div class="about">Created by {{ blog['username'] }} on {{ blog['dated'].strftime('%Y-%m-%d') }}</div>
-          <div class="about">Fork by {{ user['username'] }} on {{ blog['fork_time'].strftime('%Y-%m-%d') }}</div>
-          <a class="action" href="{{ url_for('blog.show_blog', blog_id=blog['ori_id']) }}">See original</a>
-        </div>
-        {% if g.user['id'] == blog['fork_id'] %}
-             <form action="{{ url_for('fork.delete', blog_id=blog['id'], user_id=g.user['id'], dated=blog['fork_time']) }}" method="post">
-               <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
-             </form>
+<div class="my-19 p-3 bg-white rounded shadow-sm">
+    <h6 class="border-bottom border-gray pb-2 mb-0">Blog Detail</h6>
+    <div class="media text-muted pt-3">
+        <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32" class="mr-2 rounded" style="width: 32px; height: 32px;" src="https://upload.wikimedia.org/wikipedia/zh/thumb/6/6f/Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png/220px-Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png" data-holder-rendered="true">
+        <p class="media-body pb-3 mb-0 big lh-125 border-gray">
+            <strong class="d-block text-gray-dark">@{{ blog['fork_username'] }}</strong>
 
-        {% endif %}
-      
-        {% if g.user %}
-          <a class="action" href="{{ url_for('comment.create_comment_fork', user_id=user['id'], blog_id=blog['id']) }}">Comment</a>
-        {% endif %}
-      {% if g.user and blog['id'] not in g.fork%}
-          <a class="action" href="{{ url_for('fork.create', blog_id=blog['id']) }}">  Fork</a>
-        {% elif g.user and blog['id'] in g.fork%}
-            <a class="action" href="{{ url_for('fork.delete', blog_id=blog['id']) }}">  UnFork</a>
-        {% endif %}
-      
-      </header>
-      <p class="body">{{ blog['context'] }}</p>
-    </article>
+            {{ blog['fork_comment'] }}
 
+            <em class="d-block text-gray-dark">Forwarded from:</em>
+            <strong><em class="d-block text-gray-dark">&nbsp &nbsp &nbsp @{{ blog['username'] }}</em></strong >
+            <em class="d-block text-gray-dark"> &nbsp &nbsp &nbsp {{ blog['context'] }} </em>
+
+            <em class="d-block text-gray-dark">{{ blog['fork_time'].strftime('%Y-%m-%d') }} </em>
+
+            {% if g.user['id'] == blog['fork_id'] %}
+            <form action="{{ url_for('fork.delete', blog_id=blog['id'], user_id=g.user['id'], dated=blog['fork_time']) }}" method="post">
+                <button class="btn btn-danger btn-block" type="submit" value="Delete" onclick="return confirm('Are you sure?');">Delete</button>
+            </form>
+            {% endif %}
+
+        </p>
+    </div>
+
+        <h6 class="border-bottom border-gray pb-2 mb-0">Comments</h6>
     {% for comment in comments %}
-    <article class="post">
-      <header>
-        <div>
-          <div class="about">Commented by {{ comment['username'] }} on {{ comment['dated'].strftime('%Y-%m-%d') }}</div>
-        </div>
+      <div class="media text-muted pt-3">
+            <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32" class="mr-2 rounded" style="width: 32px; height: 32px;" src="https://upload.wikimedia.org/wikipedia/zh/thumb/6/6f/Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png/220px-Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png" data-holder-rendered="true">
+            <p class="media-body pb-3 mb-0 big lh-125 border-bottom border-gray">
+                <strong class="d-block text-gray-dark">@{{ comment['username'] }} </strong>
+
+                <a class="action" href="{{ url_for('comment.show_comment', user_id=g.user['id'], blog_id=comment['blog_id'], dated=comment['dated']) }}">{{ comment['context'] }}</a>
+
+
+                <em class="d-block text-gray-dark">{{ comment['dated'].strftime('%Y-%m-%d') }}</em>
+            </p>
+
         {% if g.user['id'] == comment['author_id'] %}
-          <a class="action" href="{{ url_for('comment.update', user_id=comment['user_id'], blog_id=comment['blog_id'], dated=comment['dated']) }}">Edit</a>
+          <a class="action" href="{{ url_for('comment.update', user_id=g.user['id'], blog_id=comment['blog_id'], dated=comment['dated']) }}">Edit</a>
         {% endif %}
-      </header>
-      <p class="body">{{ comment['context'] }}</p>
+      </div>
 
-    </article>
-      <a class="action" href="{{ url_for('comment.show_comment', user_id=comment['user_id'], blog_id=comment['blog_id'], dated=comment['dated']) }}">See more</a>
-    {% if not loop.last %}
-      <hr>
-    {% endif %}
   {% endfor %}
-
+</div>
 {% endblock %}
+
