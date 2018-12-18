@@ -58,9 +58,13 @@
             <a style="color:black!important; text-decoration:none!important}" href="{{ url_for('fork.show_fork', blog_id=blog['id'], user_id=blog['fork_id']) }}">
                 {{ blog['fork_comment'] }}
             </a>
-            <em class="d-block text-gray-dark">Forwarded from:</em>
-            <strong><em class="d-block text-gray-dark">&nbsp &nbsp &nbsp @{{ blog['username'] }}</em></strong >
-            <em class="d-block text-gray-dark"> &nbsp &nbsp &nbsp {{ blog['context'] }} </em>
+                {% if blog['ori_blog_id'] != 0 %}
+                    <em class="d-block text-gray-dark">Forwarded from:</em>
+                        <strong><em class="d-block text-gray-dark">&nbsp &nbsp &nbsp @{{ blog['username'] }}</em></strong >
+                    <em class="d-block text-gray-dark"> &nbsp &nbsp &nbsp {{ blog['context'] }} </em>
+                {% else %}
+                    <em class="d-block text-gray-dark">The blog had been deleted by author</em>
+                {% endif %}
             {% endif %}
 
             {% if blog['fork_time'] %}

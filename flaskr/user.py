@@ -107,10 +107,10 @@ def get_user_and_forks(id, check_login=True):
         'u.id as fork_id, b.ori_blog_id as ori_blog_id'
         ' FROM blog b JOIN user_blog u_b on b.id = u_b.blog_id'
         ' JOIN user u ON u.id = u_b.user_id '
-        'WHERE u.id = ? and (b.ori_blog_id < -1 or b.ori_blog_id > -1)',
+        'WHERE u.id = ? and (b.ori_blog_id < -1 or b.ori_blog_id > 0)',
         (id, )
     ).fetchall()
-    print(blog)
+
     ori_blogs = []
     for i in blog:
         ori_blog = db.execute(
@@ -127,6 +127,16 @@ def get_user_and_forks(id, check_login=True):
     for i in range(len(blog)):
         blog[i].update(ori_blogs[i])
         blog[i]['fork_id'] = id
+
+    delete_blogs = db.execute(
+        'SELECT b.id, b.dated as fork_time, b.context as fork_comment,'
+        ' b.ori_blog_id as ori_blog_id, u.id as fork_id, fork_username'
+        ' FROM user u JOIN user_blog u_b on u.id = u_b.user_id JOIN blog b on u_b.blog_id = b.id'
+        ' WHERE b.ori_blog_id == 0 and u.id = ?',
+        (id, )
+    ).fetchall()
+
+    blog = blog + delete_blogs
 
     is_follower = False
     is_leader = False

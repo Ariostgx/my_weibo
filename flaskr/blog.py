@@ -39,10 +39,17 @@ def index():
         ' FROM blog b1 JOIN blog b2 ON b1.ori_blog_id = b2.id'
         ' JOIN user_blog u_b on u_b.blog_id = b1.id JOIN user u1 ON u1.id = u_b.user_id'
         ' JOIN user_blog u_b_2 ON u_b_2.blog_id = b2.id JOIN user u2 ON u2.id = u_b_2.user_id'
-        ' WHERE b1.ori_blog_id > -1 or b1.ori_blog_id < -1'
+        ' WHERE b1.ori_blog_id > 0 or b1.ori_blog_id < -1'
     ).fetchall()
 
-    blogs = blogs + forks
+    delete_blogs = db.execute(
+        'SELECT b.id as id, b.dated as fork_time, b.context as fork_comment,'
+        ' b.ori_blog_id as ori_blog_id, u.id as fork_id, u.username as fork_username'
+        ' FROM user u JOIN user_blog u_b on u.id = u_b.user_id JOIN blog b on u_b.blog_id = b.id'
+        ' WHERE b.ori_blog_id == 0'
+    ).fetchall()
+
+    blogs = blogs + forks + delete_blogs
     blogs = sorted(blogs, key=sort_by_creat_time, reverse=True)
     return render_template('blog/index.html', blogs=blogs)
 
@@ -68,9 +75,9 @@ def create():
             db = get_db()
             cur = db.cursor()
             cur.execute(
-                'INSERT INTO blog(context)'
-                ' VALUES (?)',
-                (context, )
+                'INSERT INTO blog(context, ori_blog_id)'
+                ' VALUES (?, ?)',
+                (context, -1)
             )
             blog_id = cur.lastrowid
             cur.execute(
@@ -134,6 +141,12 @@ def update(id):
 def delete(id):
     db = get_db()
     db.execute('DELETE FROM blog WHERE id = ?', (id,))
+    db.execute(
+        'UPDATE blog SET ori_blog_id = ?'
+        ' WHERE ori_blog_id = ?',
+        (0, id)
+    )
+    db.commit()
     db.commit()
     return redirect(url_for('blog.index'))
 

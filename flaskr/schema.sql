@@ -18,10 +18,11 @@ CREATE TABLE blog(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   dated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   context TEXT NOT NULL,
-  ori_blog_id INTEGER DEFAULT -1,
-  FOREIGN KEY (ori_blog_id) REFERENCES blog(id) ON DELETE SET NULL
+  ori_blog_id INTEGER DEFAULT 0,
+  FOREIGN KEY (ori_blog_id) REFERENCES blog(id) ON DELETE SET DEFAULT
 );
 
+insert into blog (id, context) values (0, 'This blog had been deleted');
 insert into blog (id, context) values (-1, 'This blog had been deleted');
 
 CREATE TABLE comment(

@@ -19,7 +19,7 @@
         <a class="nav-link" href="{{ url_for('fork.delete', blog_id=blog['id']) }}">  UnFork</a>
         {% endif %}
 
-        {% if g.user['id'] == blog['author_id'] %}
+        {% if g.user['id'] == blog['fork_id'] %}
         <a class="nav-link" href="{{ url_for('blog.update', id=blog['id']) }}">Edit</a>
         {% endif %}
     </nav>
@@ -36,10 +36,13 @@
             <strong class="d-block text-gray-dark">@{{ blog['fork_username'] }}</strong>
 
             {{ blog['fork_comment'] }}
-
-            <em class="d-block text-gray-dark">Forwarded from:</em>
-            <strong><em class="d-block text-gray-dark">&nbsp &nbsp &nbsp @{{ blog['username'] }}</em></strong >
-            <em class="d-block text-gray-dark"> &nbsp &nbsp &nbsp {{ blog['context'] }} </em>
+            {% if blog['ori_blog_id'] != 0 %}
+                <em class="d-block text-gray-dark">Forwarded from:</em>
+                <strong><em class="d-block text-gray-dark">&nbsp &nbsp &nbsp @{{ blog['username'] }}</em></strong >
+                <em class="d-block text-gray-dark"> &nbsp &nbsp &nbsp {{ blog['context'] }} </em>
+            {% else %}
+                <em class="d-block text-gray-dark">The blog had been deleted by author</em>
+            {% endif %}
 
             <em class="d-block text-gray-dark">{{ blog['fork_time'].strftime('%Y-%m-%d') }} </em>
 

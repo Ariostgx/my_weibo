@@ -18,7 +18,7 @@ def get_forward(user_id, blog_id, check_author=True):
     db = get_db()
     blog = db.execute(
         'SELECT b.id as id, b.dated as fork_time, '
-        'b.context as fork_comment, u.username as fork_name,'
+        'b.context as fork_comment, u.username as fork_username,'
         'u.id as fork_id, b.ori_blog_id as ori_blog_id'
         ' FROM blog b JOIN user_blog u_b on b.id = u_b.blog_id'
         ' JOIN user u ON u.id = u_b.user_id '
@@ -28,18 +28,18 @@ def get_forward(user_id, blog_id, check_author=True):
 
     if blog is None:
         abort(404, "blog id {0} doesn't exist.".format(id))
+    if blog['ori_blog_id'] != 0:
+        ori_blog = db.execute(
+            'SELECT b.id as ori_id, b.dated as dated, '
+            'b.context as context, u.username as username,'
+            'u.id as author_id'
+            ' FROM blog b JOIN user_blog u_b on b.id = u_b.blog_id'
+            ' JOIN user u ON u.id = u_b.user_id '
+            ' WHERE b.id = ?',
+            (blog['ori_blog_id'], )
+        ).fetchone()
 
-    ori_blog = db.execute(
-        'SELECT b.id as ori_id, b.dated as dated, '
-        'b.context as context, u.username as username,'
-        'u.id as author_id'
-        ' FROM blog b JOIN user_blog u_b on b.id = u_b.blog_id'
-        ' JOIN user u ON u.id = u_b.user_id '
-        ' WHERE b.id = ?',
-        (blog['ori_blog_id'], )
-    ).fetchone()
-
-    blog.update(ori_blog)
+        blog.update(ori_blog)
     blog['fork_id'] = user_id
     if check_author and blog['author_id'] != g.user['id']:
         abort(403)
@@ -80,6 +80,7 @@ def create(blog_id):
             if ori_blog['ori_blog_id'] != -1:
                 blog_id = ori_blog['ori_blog_id']
                 context = context + ori_blog['context']
+
             cur.execute(
                 'INSERT INTO blog(ori_blog_id, context)'
                 ' VALUES (?, ?)',
