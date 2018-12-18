@@ -1,58 +1,58 @@
 {% extends 'base.html' %}
 
+
+<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+
 {% block header %}
-  <div class="nav-scroller bg-white shadow-sm">
-      <nav class="nav nav-underline">
-        <a class="nav-link active" href="{{ url_for('blog.create') }}">New Blog</a>
+<div class="nav-scroller nav bg-white shadow-sm">
+    <nav class="nav nav-underline">
+        <a class="nav-link active" href="{{ url_for('blog.index') }}">World</a>
         <a class="nav-link" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">
-          Friends
-          <span class="badge badge-pill bg-light align-text-bottom">27</span>
+            Friends
         </a>
         <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
-        <a class="nav-link" href="{{ url_for('blog.index') }}">World</a>
-        <a class="nav-link" href="#">Link</a>
-        <a class="nav-link" href="#">Link</a>
-        <a class="nav-link" href="#">Link</a>
-        <a class="nav-link" href="#">Link</a>
-        <a class="nav-link" href="#">Link</a>
-      </nav>
-    </div>
-
-
+        <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
+        </a>
+    </nav>
+</div>
 {% endblock %}
 
 {% block content %}
-  {% for blog in blogs %}
-    <article class="post">
-      <header>
+<div class="my-19 p-3 bg-white rounded shadow-sm">
+    <h6 class="border-bottom border-gray pb-2 mb-0">Most recent blogs</h6>
+    {% for blog in blogs %}
 
-        <div>
-        {% if blog['fork_time'] %}
-          <h1>{{ blog['fork_comment'] }}</h1>
-            <div class="about">Fork by {{ blog['fork_username'] }} on {{ blog['fork_time'].strftime('%Y-%m-%d') }}
-               from <a class="action" href="{{ url_for('user.show_user', user_id=blog['author_id']) }}">{{ blog['username'] }}</a>
-            </div>
-        {% else %}
-            <h1>[Origin]</h1>
-            <div class="about">created by {{ blog['username'] }} on {{ blog['dated'].strftime('%Y-%m-%d') }}</div>
-        {% endif %}
+        <div class="media text-muted pt-3">
+            <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32" class="mr-2 rounded" style="width: 32px; height: 32px;" src="https://upload.wikimedia.org/wikipedia/zh/thumb/6/6f/Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png/220px-Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png" data-holder-rendered="true">
+            <p class="media-body pb-3 mb-0 big lh-125 border-bottom border-gray">
+                {% if blog['fork_time'] %}
+                <strong class="d-block text-gray-dark">@{{ blog['fork_username'] }}</strong>
+                {% else %}
+                <strong class="d-block text-gray-dark">@{{ blog['username'] }} </strong>
+                {% endif %}
 
+                {% if blog['ori_blog_id'] == -1 %}
+                <a style="color:black!important; text-decoration:none!important}" href="{{ url_for('blog.show_blog', blog_id=blog['id']) }}">
+                    {{ blog['context'] }}
+                </a>
+                {% else %}
+                <a style="color:black!important; text-decoration:none!important}" href="{{ url_for('fork.show_fork', blog_id=blog['id'], user_id=blog['fork_id']) }}">
+                    {{ blog['fork_comment'] }}
+                </a>
+                <em class="d-block text-gray-dark">Forwarded from:</em>
+                <strong><em class="d-block text-gray-dark">&nbsp &nbsp &nbsp @{{ blog['username'] }}</em></strong >
+                <em class="d-block text-gray-dark"> &nbsp &nbsp &nbsp {{ blog['context'] }} </em>
+                {% endif %}
+
+                {% if blog['fork_time'] %}
+                <em class="d-block text-gray-dark">{{ blog['fork_time'].strftime('%Y-%m-%d') }} </em>
+                {% else %}
+                <em class="d-block text-gray-dark">{{ blog['dated'].strftime('%Y-%m-%d') }}</em>
+                {% endif %}
+            </p>
         </div>
 
-        {% if g.user['id'] == blog['author_id'] and blog['ori_blog_id'] == 1%}
-          <a class="action" href="{{ url_for('blog.update', id=blog['id']) }}">Edit</a>
-        {% endif %}
-      </header>
-      <p class="body">{{ blog['context'] }}</p>
-
-    </article>
-      {% if blog['ori_blog_id'] == -1 %}
-        <a class="action" href="{{ url_for('blog.show_blog', blog_id=blog['id']) }}">See more</a>
-    {% else %}
-       <a class="action" href="{{ url_for('fork.show_fork', blog_id=blog['id'], user_id=blog['fork_id']) }}">See more</a>
-     {% endif %}
-      {% if not loop.last %}
-      <hr>
-    {% endif %}
-  {% endfor %}
+{% endfor %}
+</div>
 {% endblock %}

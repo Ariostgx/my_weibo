@@ -1,17 +1,30 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Edit Comment{% endblock %}</h1>
+  <div class="nav-scroller nav bg-white shadow-sm">
+    <nav class="nav nav-underline">
+        <a class="nav-link" href="{{ url_for('blog.index') }}">World</a>
+        <a class="nav-link" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">
+            Friends
+        </a>
+        <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
+        <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
+    </nav>
+  </div>
 {% endblock %}
 
 {% block content %}
+<div class="my-19 p-3 bg-white rounded shadow-sm">
+
   <form method="post">
-    <label for="body">Body</label>
-    <textarea name="body" id="body">{{ request.form['context'] or comment['context'] }}</textarea>
-    <input type="submit" value="Save">
+    <h6 class="border-bottom border-gray pb-2 mb-0">Edit Comment</h6>
+    <textarea name='body' id='body' class="form-control" rows="3">{{ request.form['context'] or comment['context'] }}</textarea>
+    <button class="btn btn-primary btn-block" type="submit" value="Save">Save</button>
+
   </form>
-  <hr>
   <form action="{{ url_for('comment.delete', user_id=comment['user_id'], blog_id=comment['blog_id'], dated=comment['dated']) }}" method="post">
-    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+    <button class="btn btn-danger btn-block" type="submit" value="Delete" onclick="return confirm('Are you sure?');">Delete</button>
   </form>
+
+</div>
 {% endblock %}
