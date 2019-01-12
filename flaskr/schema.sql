@@ -5,13 +5,21 @@ DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS user_comment;
 DROP TABLE IF EXISTS user_blog;
 DROP TABLE IF EXISTS blog_comment;
+DROP TABLE IF EXISTS community;
+DROP TABLE IF EXISTS message;
+DROP TABLE IF EXISTS member;
 
 
 CREATE TABLE user(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
-  dated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  dated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  birthday TEXT NOT NULL,
+  email TEXT NOT NULL,
+  gender CHAR NOT NULL,
+  telephone TEXT NOT NULL,
+  introduction TEXT NOT NULL
 );
 
 CREATE TABLE blog(
@@ -67,3 +75,30 @@ CREATE TABLE user_blog(
   FOREIGN KEY (blog_id) REFERENCES blog(id)
 );
 
+
+
+CREATE TABLE community(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  theme TEXT NOT NULL,
+  description TEXT NOT NULL,
+  dated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  key_word TEXT NOT NULL
+);
+
+CREATE TABLE member(
+  community_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  dated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES user(id)
+  FOREIGN KEY (community_id) REFERENCES community(id)
+);
+
+create TABLE message(
+  sender_id INTEGER NOT NULL,
+  receiver_id INTEGER NOT NULL,
+  context TEXT NOT NULL,
+  dated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  checked INTEGER DEFAULT 0,
+  FOREIGN KEY (sender_id) REFERENCES user(id)
+  FOREIGN KEY (receiver_id) REFERENCES user(id)
+);

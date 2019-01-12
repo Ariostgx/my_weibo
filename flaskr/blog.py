@@ -147,7 +147,6 @@ def delete(id):
         (0, id)
     )
     db.commit()
-    db.commit()
     return redirect(url_for('blog.index'))
 
 
@@ -196,5 +195,31 @@ def friends_blog():
 
     blogs = blogs + forks
     blogs = sorted(blogs, key=sort_by_creat_time, reverse=True)
-    return render_template('blog/index.html', blogs=blogs)
+    return render_template('blog/friendsBlog.html', blogs=blogs)
 
+
+@bp.route('/search/', methods=('GET', 'POST'))
+@login_required
+def search():
+    if request.method == 'POST':
+        name = request.form['title']
+
+        db = get_db()
+        name = '%' + name + '%'
+        blogs = db.execute(
+            'SELECT *'
+            ' FROM blog'
+            ' Where context like ?',
+            (name,)
+        ).fetchall()
+        context = name[1:-1]
+
+        return render_template('blog/show_search_res.html', blogs=blogs, context=context)
+
+    return render_template('blog/search.html')
+
+
+@bp.route('/start_search/')
+@login_required
+def total_search():
+    return render_template('search.html')

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+
+{% block content %}
+<script type="text/javascript">
+		function checkLength(obj)  {
+
+		    var maxChars = 140;//最多字符数
+		    var curr = maxChars - obj.value.length;
+		    if( curr > 0 ){
+		    	document.getElementById("checklen").innerHTML = curr.toString();
+		    }else{
+		    	document.getElementById("checklen").innerHTML = '0';
+		    	document.getElementById("subject").readOnly=true;
+		    }
+		}
+
+</script>
+<div class="my-19 p-3 bg-white rounded shadow-sm">
+    <form method="post">
+     <label for="username">Send message to:</label>
+    <input name="username" type="username" id="username" class="form-control" placeholder="username" required autofocus="">
+
+
+    <label for="body">Send message to {{ send_to_name }}</label>
+        <textarea name="body" id="body" class="form-control" rows="3" maxlength="140" onkeyup="checkLength(this)"   onfocus="javascript:if(this.value=='Context is required')this.value='';">Context is required</textarea>
+        <span id="subjectchk">
+			<strong id="checklen" style="color:#FF0000">140</strong>
+			character(s) left
+		</span>
+		<span id="postNameRule" class="spn_flag_1" style="display:none" ></span>
+      <button class="btn btn-primary btn-block" type="submit" value="Save">Save</button>
+    </form>
+</div>
+{% endblock %}

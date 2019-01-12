@@ -12,6 +12,30 @@
            required>
     <label for="password">Password</label>
     <input type="password" name="password" id="password" required>
+
+      <!-- start -->
+      <label for="birthday">birthday</label>
+    <input name="birthday" id="birthday"
+           value="{{ request.form['birthday'] or user['birthday'] }}"
+           required>
+      <label for="email">email</label>
+    <input name="email" id="email"
+           value="{{ request.form['email'] or user['email'] }}"
+           required>
+      <label for="gender">gender</label>
+    <input name="gender" id="gender"
+           value="{{ request.form['gender'] or user['gender'] }}"
+           required>
+      <label for="telephone">telephone</label>
+    <input name="telephone" id="telephone"
+           value="{{ request.form['telephone'] or user['telephone'] }}"
+           required>
+      <label for="introduction">introduction</label>
+    <input name="introduction" id="introduction"
+           value="{{ request.form['introduction'] or user['introduction'] }}"
+           required>
+       <!-- end -->
+
     <input type="submit" value="Update">
   </form>
   <hr>

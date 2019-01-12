@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+
+{% block header %}
+<div class="nav-scroller nav bg-white shadow-sm">
+    <nav class="nav nav-underline">
+        <a class="nav-link" href="{{ url_for('blog.index') }}">World</a>
+        <a class="nav-link" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">
+            Friends
+        </a>
+        <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
+        <a class="nav-link" href="{{ url_for('community.community_index') }}">Community</a>
+        <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
+        <a class="nav-link active" href="{{ url_for('message.message_index', user_id=g.user['id']) }}">Message</a>
+    </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="my-19 p-3 bg-white rounded shadow-sm">
+    <h6 class="border-bottom border-gray pb-2 mb-0">Most recent message</h6>
+    {% for user_message in user_messages %}
+
+        <div class="media text-muted pt-3">
+            <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32" class="mr-2 rounded" style="width: 32px; height: 32px;" src="https://upload.wikimedia.org/wikipedia/zh/thumb/6/6f/Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png/220px-Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png" data-holder-rendered="true">
+            <p class="media-body pb-3 mb-0 big lh-125 border-bottom border-gray">
+            <strong class="d-block text-gray-dark">Chat with {{ user_message['inter_user_name'] }}  Not read: {{ user_message['not_read'] }}</strong>
+                {% if user_message['message']['sender_id'] == g.user['id'] %}
+                <strong class="d-block text-gray-dark">{{ g.user['username'] }}:  {{ user_message['message']['context'] }}</strong>
+                {% else %}
+                <strong class="d-block text-gray-dark">{{ user_message['inter_user_name'] }}:  {{ user_message['message']['context'] }}</strong>
+                {% endif %}
+            <strong class="d-block text-gray-dark">dated: {{ user_message['recent_chat'] }}</strong>
+            <a href="{{ url_for('message.show_message_with_sb', user_id=user_message['inter_user_id']) }}">
+                        <strong class="d-block text-gray-dark">See more message with {{ user_message['inter_user_name'] }}</strong>
+            </a>
+
+        </div>
+
+{% endfor %}
+</div>
+{% endblock %}

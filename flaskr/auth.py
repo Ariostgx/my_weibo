@@ -15,6 +15,11 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        birthday = request.form['birthday']
+        email = request.form['email']
+        gender = request.form['gender']
+        telephone = request.form['telephone']
+        introduction = request.form['introduction']
         db = get_db()
         error = None
 
@@ -29,8 +34,10 @@ def register():
 
         if error is None:
             db.execute(
-                'INSERT INTO user (username, password) VALUES (?, ?)',
-                (username, generate_password_hash(password))
+                'INSERT INTO user (username, password, birthday, email,'
+                'gender, telephone, introduction) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (username, generate_password_hash(password), birthday,
+                 email, gender, telephone, introduction)
             )
             db.commit()
             return redirect(url_for('auth.login'))
@@ -99,6 +106,14 @@ def load_logged_in_user():
             if i['ori_blog_id'] != -1:
                 fork.append(i['ori_blog_id'])
         g.fork = fork
+
+        not_read = db.execute(
+            'SELECT *'
+            ' FROM message'
+            ' Where receiver_id = ? and checked = 0',
+            (user_id,)
+        ).fetchall()
+        g.not_read = len(not_read)
 
 
 @bp.route('/logout')

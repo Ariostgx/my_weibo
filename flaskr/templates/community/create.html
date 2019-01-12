@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+
+{% block login %}
+  <form method="post" class="form-signin">
+
+    <div class="text-center mb-4">
+    <img class="mb-4" src="/static/logo.png" alt="" width="72*2" height="72*2">
+    <h1 class="h3 mb-3 font-weight-normal">Aggregate the People!</h1>
+    </div>
+
+    <label for="theme">theme</label>
+    <input name="theme" type="username" id="theme" class="form-control" placeholder="theme" required autofocus="">
+    <label for="description">description</label>
+    <input name="description" type="username" id="description" class="form-control" placeholder="description">
+    <label for="key_word">key_word</label>
+    <input name="key_word" type="username" id="key_word" class="form-control" placeholder="key_word" required autofocus="">
+
+
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <p class="mt-5 mb-3 text-muted text-center">© 1926-forever</p>
+  </form>
+{% endblock %}

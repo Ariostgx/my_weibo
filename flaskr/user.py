@@ -25,7 +25,7 @@ def users_index():
 def get_user(user_id):
     db = get_db()
     user = db.execute(
-        'SELECT username, id, dated'
+        'SELECT username, id, dated, birthday, email, gender, telephone, introduction'
         ' FROM user'
         ' WHERE id=?',
         (user_id, )
@@ -38,10 +38,10 @@ def get_user(user_id):
 def get_user_and_blogs(id, check_login=True):
     db = get_db()
     user = db.execute(
-        'SELECT id, dated, username'
+        'SELECT username, id, dated, birthday, email, gender, telephone, introduction'
         ' FROM user'
-        ' Where user.id = ?',
-        (id,)
+        ' WHERE id=?',
+        (id, )
     ).fetchone()
     if user is None:
         abort(404, "Post id {0} doesn't exist.".format(id))
@@ -89,10 +89,10 @@ def get_user_and_blogs(id, check_login=True):
 def get_user_and_forks(id, check_login=True):
     db = get_db()
     user = db.execute(
-        'SELECT id, dated, username'
+        'SELECT username, id, dated, birthday, email, gender, telephone, introduction'
         ' FROM user'
-        ' Where user.id = ?',
-        (id,)
+        ' WHERE id=?',
+        (id, )
     ).fetchone()
     if user is None:
         abort(404, "Post id {0} doesn't exist.".format(id))
@@ -130,7 +130,7 @@ def get_user_and_forks(id, check_login=True):
 
     delete_blogs = db.execute(
         'SELECT b.id, b.dated as fork_time, b.context as fork_comment,'
-        ' b.ori_blog_id as ori_blog_id, u.id as fork_id, fork_username'
+        ' b.ori_blog_id as ori_blog_id, u.id as fork_id, u.username as fork_username'
         ' FROM user u JOIN user_blog u_b on u.id = u_b.user_id JOIN blog b on u_b.blog_id = b.id'
         ' WHERE b.ori_blog_id == 0 and u.id = ?',
         (id, )
@@ -169,10 +169,10 @@ def get_user_and_forks(id, check_login=True):
 def get_user_and_followers(id, check_login=True):
     db = get_db()
     user = db.execute(
-        'SELECT id, dated, username'
-        ' FROM user u'
-        ' Where id = ?',
-        (id,)
+        'SELECT username, id, dated, birthday, email, gender, telephone, introduction'
+        ' FROM user'
+        ' WHERE id=?',
+        (id, )
     ).fetchone()
 
     if user is None:
@@ -195,10 +195,10 @@ def get_user_and_followers(id, check_login=True):
 def get_user_and_leaders(id, check_login=True):
     db = get_db()
     user = db.execute(
-        'SELECT id, dated, username'
-        ' FROM user u'
-        ' Where id = ?',
-        (id,)
+        'SELECT username, id, dated, birthday, email, gender, telephone, introduction'
+        ' FROM user'
+        ' WHERE id=?',
+        (id, )
     ).fetchone()
 
     if user is None:
@@ -234,8 +234,54 @@ def show_user(user_id):
     _, forks, _, _,  = get_user_and_forks(user_id, check_login=False)
     blogs = blogs + forks
     blogs = sorted(blogs, key=sort_by_creat_time, reverse=True)
+
+    db = get_db()
+
+    communities_id = db.execute(
+        'SELECT community_id as id'
+        ' FROM member'
+        ' WHERE user_id = ?'
+        ' ORDER by dated',
+        (user_id, )
+    ).fetchall()
+    communities = []
+    for i in communities_id:
+        community = db.execute(
+            'SELECT theme, id, description, dated, key_word'
+            ' FROM community'
+            ' WHERE id = ?'
+            ' ORDER by dated',
+            (i['id'], )
+        ).fetchone()
+        communities.append(community)
+
+    communities = communities[:3]
     return render_template('user/showUser.html', user=user, blogs=blogs,
-                           is_follower=is_follower, is_leader=is_leader)
+                           is_follower=is_follower, is_leader=is_leader,
+                           communities=communities)
+
+
+@bp.route('/<int:user_id>/communities')
+@login_required
+def show_community(user_id):
+    db = get_db()
+
+    user = db.execute(
+        'SELECT username, id, dated, birthday, email, gender, telephone, introduction'
+        ' FROM user'
+        ' WHERE id=?',
+        (user_id,)
+    ).fetchone()
+
+    communities = db.execute(
+        'SELECT theme, description, key_word, id, dated'
+        ' FROM community'
+        ' WHERE user_id = ?'
+        ' ORDER by dated',
+        (user_id, )
+    ).fetchall()
+    return render_template('user/showCommunity.html',
+                           communities=communities, username=user['username'])
 
 
 @bp.route('/<int:user_id>/follow/<int:leader_id>')
@@ -307,6 +353,11 @@ def update(user_id):
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        birthday = request.form['birthday']
+        email = request.form['email']
+        gender = request.form['gender']
+        telephone = request.form['telephone']
+        introduction = request.form['introduction']
         error = None
 
         if not username:
@@ -318,9 +369,12 @@ def update(user_id):
 
             db = get_db()
             db.execute(
-                'UPDATE user SET username = ?, password = ?'
+                'UPDATE user SET username = ?, password = ?,'
+                'birthday = ?, email = ?, gender = ?, telephone = ?,'
+                'introduction = ?'
                 ' WHERE id = ?',
-                (username, generate_password_hash(password), user_id)
+                (username, generate_password_hash(password),
+                 birthday, email, gender, telephone, introduction, user_id)
             )
             db.commit()
             return redirect(url_for('user.show_user', user_id=user_id))

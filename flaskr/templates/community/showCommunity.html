@@ -7,26 +7,58 @@
 {% block header %}
 <div class="nav-scroller nav bg-white shadow-sm">
     <nav class="nav nav-underline">
-        <a class="nav-link active" href="{{ url_for('blog.index') }}">World</a>
+        <a class="nav-link" href="{{ url_for('blog.index') }}">World</a>
         <a class="nav-link" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">
             Friends
         </a>
         <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
-        <a class="nav-link" href="{{ url_for('community.community_index') }}">Community</a>
-
-        {% if g.not_read > 0 %}
-            <a class="nav-link" href="{{ url_for('message.message_index') }}">You Have New Messages! {{ g.not_read }}</a>
-        {% else %}
-            <a class="nav-link" href="{{ url_for('message.message_index') }}">Messages</a>
-        {% endif %}
-        <a class="nav-link" href="{{ url_for('message.create_nd_way') }}">Send Message</a>
-        <a class="nav-link" href="{{ url_for('blog.total_search') }}">Search</a>
         <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
+        <a class="nav-link active">Show Community</a>
     </nav>
 </div>
 {% endblock %}
 
 {% block content %}
+<div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded shadow-sm">
+    <img class="mr-3" src="/static/logo.png" alt="" width="48" height="48">
+    <div class="lh-100">
+        <h6 class="mb-0 text-white lh-100">{{ community['theme']}}</h6>
+        <small>Since {{ community['dated'].strftime('%Y-%m-%d') }}</small>
+        <small>key_word: {{ community['key_word'] }}</small>
+        <small>description: {{ community['description'] }}</small>
+        {% if have_join == 0 %}
+            <a class="d-block text-gray-dark" href="{{ url_for('community.join_community', community_id=community['id']) }}">
+                Join this community</a>
+        {% else %}
+            <a class="d-block text-gray-dark" href="{{ url_for('community.leave_community', community_id=community['id']) }}">
+                leave this community</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded shadow-sm">
+    <img class="mr-3" src="/static/logo.png" alt="" width="48" height="48">
+    <div class="lh-100">
+        <h6 class="mb-0 text-white lh-100">Recent New Members</h6>
+        {% for user in users %}
+
+            <div class="media text-muted pt-3">
+                <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32" class="mr-2 rounded" style="width: 32px; height: 32px;" src="https://upload.wikimedia.org/wikipedia/zh/thumb/6/6f/Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png/220px-Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png" data-holder-rendered="true">
+                <p class="media-body pb-3 mb-0 big lh-125 border-bottom border-gray">
+                    <a href="{{ url_for('user.show_user', user_id=user['id']) }}">
+                        <strong class="d-block text-gray-dark">{{ user['username'] }}</strong>
+                    </a>
+                    <em>From {{ user['dated'].strftime('%Y-%m-%d') }}</em>
+                </p>
+
+            </div>
+        {% endfor %}
+    </div>
+    <a href="{{ url_for('community.show_users', community_id=community['id']) }}">
+        <strong class="d-block text-gray-dark">See all members</strong>
+    </a>
+</div>
+
 <div class="my-19 p-3 bg-white rounded shadow-sm">
     <h6 class="border-bottom border-gray pb-2 mb-0">Most recent blogs</h6>
     {% for blog in blogs %}

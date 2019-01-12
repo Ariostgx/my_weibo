@@ -42,6 +42,12 @@ def create_app(test_config=None):
     from . import fork
     app.register_blueprint(fork.bp)
 
+    from . import community
+    app.register_blueprint(community.bp)
+
+    from . import message
+    app.register_blueprint(message.bp)
+
     return app
 
 

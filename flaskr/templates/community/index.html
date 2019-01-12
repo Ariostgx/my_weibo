@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <div class="nav-scroller nav bg-white shadow-sm">
+    <nav class="nav nav-underline">
+        <a class="nav-link" href="{{ url_for('blog.index') }}">World</a>
+        <a class="nav-link" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">
+            Friends
+        </a>
+        <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
+        <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
+        <a class="nav-link active" href="{{ url_for('community.community_index') }}">Community</a>
+         <a class="nav-link" href="{{ url_for('community.create') }}">New Community</a>
+    </nav>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="my-19 p-3 bg-white rounded shadow-sm">
+    <h6 class="border-bottom border-gray pb-2 mb-0">Suggested Communities</h6>
+    {% for community in communities %}
+
+        <div class="media text-muted pt-3">
+            <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32" class="mr-2 rounded" style="width: 32px; height: 32px;" src="https://upload.wikimedia.org/wikipedia/zh/thumb/6/6f/Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png/220px-Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png" data-holder-rendered="true">
+            <p class="media-body pb-3 mb-0 big lh-125 border-bottom border-gray">
+                <a href="{{ url_for('community.show_community', community_id=community['id']) }}">
+                    <strong class="d-block text-gray-dark">{{ community['theme'] }}</strong>
+                    <strong class="d-block text-gray-dark">{{ community['description'] }}</strong>
+                </a>
+                <em>From {{ community['dated'].strftime('%Y-%m-%d') }}</em>
+            </p>
+
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
