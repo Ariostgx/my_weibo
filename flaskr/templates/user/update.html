@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Edit Yourself{% endblock %}</h1>
-{% endblock %}
+<link href="{{ url_for('static', filename='login.css') }}" rel="stylesheet">
 
 {% block content %}
   <form method="post">
@@ -35,11 +33,13 @@
            value="{{ request.form['introduction'] or user['introduction'] }}"
            required>
        <!-- end -->
+  <button class="btn btn-lg btn-primary btn-block" type="submit" value="Update">Update</button>
 
-    <input type="submit" value="Update">
+  <form action="{{ url_for('blog.not_implement') }}">
+     <button class="btn btn-lg btn-danger btn-block" type="submit" value="Delete and Run" onclick="return confirm('Are you sure?');">Delete the profile</button>
+  </form>
+
   </form>
   <hr>
-  <form action="{{ url_for('blog.not_implement') }}">
-    <input class="danger" type="submit" value="Delete and Run" onclick="return confirm('Are you sure?');">
-  </form>
+
 {% endblock %}

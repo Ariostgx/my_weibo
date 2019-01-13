@@ -1,14 +1,17 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Search{% endblock %}</h1>
-{% endblock %}
+<link href="{{ url_for('static', filename='login.css') }}" rel="stylesheet">
 
 {% block content %}
+
+  <div class="py-5 text-center">
+          <h2>Search community</h2>
+          <p class="lead">Input the name of the community to search.</p>
+  </div>
+
   <form method="post">
-    <label for="title">Title</label>
     <input name="title" id="title" required>
-    <input type="submit" value="Search">
+    <button class="btn btn-lg btn-primary btn-block" type="submit" value="Search">Search</button>
   </form>
 
 {% endblock %}

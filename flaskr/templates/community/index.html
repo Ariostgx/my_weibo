@@ -1,18 +1,24 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <div class="nav-scroller nav bg-white shadow-sm">
+<div class="nav-scroller nav bg-white shadow-sm">
     <nav class="nav nav-underline">
         <a class="nav-link" href="{{ url_for('blog.index') }}">World</a>
         <a class="nav-link" href="{{ url_for('blog.friends_blog', user_id=g.user['id']) }}">
             Friends
         </a>
         <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
-        <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
         <a class="nav-link active" href="{{ url_for('community.community_index') }}">Community</a>
-         <a class="nav-link" href="{{ url_for('community.create') }}">New Community</a>
+        {% if g.not_read and g.not_read > 0 %}
+            <a class="nav-link" href="{{ url_for('message.message_index') }}">You Have New Messages! {{ g.not_read }}</a>
+        {% else %}
+            <a class="nav-link" href="{{ url_for('message.message_index') }}">Messages</a>
+        {% endif %}
+        <a class="nav-link" href="{{ url_for('message.create_nd_way') }}">Send Message</a>
+        <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
+        <a class="nav-link" href="{{ url_for('community.create') }}">New Community</a>
     </nav>
-    </div>
+</div>
 {% endblock %}
 
 {% block content %}
@@ -25,8 +31,10 @@
             <p class="media-body pb-3 mb-0 big lh-125 border-bottom border-gray">
                 <a href="{{ url_for('community.show_community', community_id=community['id']) }}">
                     <strong class="d-block text-gray-dark">{{ community['theme'] }}</strong>
-                    <strong class="d-block text-gray-dark">{{ community['description'] }}</strong>
                 </a>
+
+                <strong>{{ community['description'] }}</strong>
+                <br>
                 <em>From {{ community['dated'].strftime('%Y-%m-%d') }}</em>
             </p>
 
