@@ -8,21 +8,16 @@
             Friends
         </a>
         <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
-        <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
-        </a>
 
         <a class="nav-link" href="{{ url_for('user.show_user', user_id=user['id']) }}">{{ user['username']}}</a>
 
         <a class="nav-link" href="{{ url_for('user.show_followers', user_id=user['id']) }}">Followers</a>
         <a class="nav-link active" href="{{ url_for('user.show_leaders', user_id=user['id']) }}">Following</a>
 
-        {% if g.user['id'] != user['id'] and not is_follower %}
-        <a class="nav-link" href="{{ url_for('user.follow_user', user_id=g.user['id'], leader_id=user['id']) }}">Follow</a>
-        {% elif g.user['id'] != user['id'] %}
-        <a class="nav-link" href="{{ url_for('user.unfollow_user', user_id=g.user['id'], leader_id=user['id']) }}">UnFollow</a>
-        {% elif g.user['id'] == user['id'] %}
-        <a class="nav-link" href="{{ url_for('user.update', user_id=g.user['id'])}}">Personal Configs</a>
+        {% if g.user['id'] != user['id'] %}
+        <a class="nav-link" href="{{ url_for('message.create_rd_way', send_to_name=user['username']) }}">Send Message</a>
         {% endif %}
+
     </nav>
 </div>
 {% endblock %}
@@ -34,13 +29,18 @@
 <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded shadow-sm">
     <img class="mr-3" src="/static/logo.png" alt="" width="48" height="48">
     <div class="lh-100">
-        <h6 class="mb-0 text-white lh-100">{{ user['username']}}</h6>
-        <small>Since {{ user['dated'].strftime('%Y-%m-%d') }}</small>
+        <h5 class="mb-0 text-white lh-100">{{ user['username']}}</h5>
+        <h6>Since {{ user['dated'].strftime('%Y-%m-%d') }}</h6>
+        <b7>birthday: {{ user['birthday'] }}</b7> <br>
+        <b7>gender: {{ user['gender'] }}</b7> <br>
+        <b7>email: {{ user['email'] }}</b7> <br>
+        <b7>TEL: {{ user['telephone'] }}</b7> <br>
+        <b7>introduction: {{ user['introduction'] }}</b7> <br>
     </div>
 </div>
 
 <div class="my-19 p-3 bg-white rounded shadow-sm">
-    <h6 class="border-bottom border-gray pb-2 mb-0">Followers</h6>
+    <h6 class="border-bottom border-gray pb-2 mb-0">Following</h6>
     {% for leader in leaders %}
         <div class="media text-muted pt-3">
             <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32" class="mr-2 rounded" style="width: 32px; height: 32px;" src="https://upload.wikimedia.org/wikipedia/zh/thumb/6/6f/Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png/220px-Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png" data-holder-rendered="true">

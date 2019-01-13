@@ -15,7 +15,7 @@
 
 <body class="bg-light">
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="{{ url_for('blog.index') }}">Flaskr</a>
+    <a class="navbar-brand" href="{{ url_for('blog.index') }}">Home</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="true" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -28,15 +28,16 @@
 
         <form class="form-inline my-2 my-lg-0">
             <ul class="navbar-nav mr-auto">
-                {% if g.user %}
                 <li class="nav-item dropdown mr-sm-2">
-                    <a class="nav-link dropdown-toggle" href="https://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ g.user['username'] }}</a>
+                    <a class="nav-link dropdown-toggle" href="https://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Search</a>
                     <div class="dropdown-menu" aria-labelledby="dropdown01">
-                        <a class="dropdown-item" href="#">My profile</a>
-                        <a class="dropdown-item" href="#">Setting</a>
-                        <a class="dropdown-item" href="#">Extend life</a>
+                        <a class="dropdown-item" href="{{ url_for('user.search') }}">Search User</a>
+                        <a class="dropdown-item" href="{{ url_for('community.search') }}">Search Community</a>
+                        <a class="dropdown-item" href="{{ url_for('blog.search') }}">Search Blog</a>
                     </div>
                 </li>
+
+                {% if g.user %}
                 <li class="nav-item my-2 my-sm-0"><a class="btn btn-outline-secondary" href="{{ url_for('auth.logout') }}">Log Out</a></li>
                 {% else %}
                 <li class="nav-item"><a class="btn btn-outline-primary mr-sm-2" href="{{ url_for('auth.register') }}">Register</a></li>

@@ -51,7 +51,7 @@ def create():
                 ' VALUES (?, ?, ?)',
                 (theme, description, key_word)
             )
-            db.commit()
+            get_db().commit()
             last_id = db.lastrowid
             return redirect(url_for('community.show_community', community_id=last_id))
 

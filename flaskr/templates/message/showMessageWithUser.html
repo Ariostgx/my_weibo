@@ -13,22 +13,17 @@
         </a>
         <a class="nav-link" href="{{ url_for('user.users_index') }}">Explore</a>
         <a class="nav-link" href="{{ url_for('community.community_index') }}">Community</a>
+        <a class="nav-link active" href="{{ url_for('message.message_index') }}">Messages</a>
+        <a class="nav-link" href="{{ url_for('message.create_nd_way') }}">Send Message</a>
         <a class="nav-link" href="{{ url_for('blog.create') }}">New Blog</a>
-        <a class="nav-link" href="{{ url_for('message.message_index', user_id=g.user['id']) }}">Message</a>
     </nav>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="my-19 p-3 bg-white rounded shadow-sm">
-    <h6 class="border-bottom border-gray pb-2 mb-0">Most recent message</h6>
-    <a href="{{ url_for('message.create', send_to_id=user['id'], send_to_name=user['username']) }}">
-                <strong class="d-block text-gray-dark">Send Message to {{ user['username'] }}</strong>
-    </a>
-    <strong class="d-block text-gray-dark"> Not read: {{ not_read }}</strong>
-    <strong class="d-block text-gray-dark"> Message with {{ user['username'] }}</strong>
+    <h6 class="border-bottom border-gray pb-2 mb-0">Message with {{ user['username'] }}</h6>
     {% for message in messages %}
-
         <div class="media text-muted pt-3">
             <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32" class="mr-2 rounded" style="width: 32px; height: 32px;" src="https://upload.wikimedia.org/wikipedia/zh/thumb/6/6f/Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png/220px-Icon_of_%E6%97%85%E3%81%8B%E3%81%88%E3%82%8B_20180122.png" data-holder-rendered="true">
                 {% if message['sender_id'] == g.user['id'] %}
@@ -36,10 +31,13 @@
                 {% else %}
                 <strong class="d-block text-gray-dark">{{ user['username'] }}:  {{ message['context'] }}</strong>
                 {% endif %}
-            <strong class="d-block text-gray-dark"> &nbsp &nbsp dated: {{ message['dated'] }}</strong>
 
+            <em class="text-gray-dark"> &nbsp &nbsp {{ message['dated'] }}</em>
         </div>
+    {% endfor %}
 
-{% endfor %}
+    <a  href="{{ url_for('message.create', send_to_id=user['id'], send_to_name=user['username']) }}">
+                <strong class="border-top border-gray d-block text-gray-dark">Send Message to {{ user['username'] }}</strong>
+    </a>
 </div>
 {% endblock %}

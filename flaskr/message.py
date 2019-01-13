@@ -124,6 +124,7 @@ def show_message_with_sb(user_id):
         ' WHERE receiver_id = ? and sender_id = ?',
         (1, g.user['id'], user_id)
     )
+    db.commit()
 
     return render_template('message/showMessageWithUser.html',
                            messages=message, user=user,
