@@ -105,6 +105,7 @@ def get_comment(user_id, blog_id, dated, check_author=False):
 @login_required
 def show_comment(user_id, blog_id, dated):
     comment = get_comment(user_id, blog_id, dated, check_author=False)
+    print(comment)
     return render_template('comment/showComment.html', comment=comment)
 
 
@@ -136,7 +137,7 @@ def update(user_id, blog_id, dated):
     return render_template('comment/update.html', comment=comment)
 
 
-@bp.route('/<int:user_id>/delete_comment', methods=('POST',))
+@bp.route('/<int:user_id>/<int:blog_id>/<dated>/delete_comment', methods=('POST',))
 @login_required
 def delete(user_id, blog_id, dated):
     db = get_db()
